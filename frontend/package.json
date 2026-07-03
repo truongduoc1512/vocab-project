@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Frontend for Vocab Project",
   "scripts": {
-    "dev": "npx -y http-server ./ -p 3000"
+    "dev": "npx -y http-server ./ -p 3000",
+    "build": "echo window.ENV_API_BASE_URL = '${BACKEND_URL:-http://localhost:8080/api/v1/words}'; > config.js"
   },
   "dependencies": {}
 }

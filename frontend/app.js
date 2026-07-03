@@ -1,10 +1,10 @@
 // ==========================================
 // Config & Constants
 // ==========================================
-// Tự động chuyển đổi giữa Localhost và Render Cloud khi deploy lên Vercel
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:8080/api/v1/words'
-    : 'https://vocab-project.onrender.com/api/v1/words';
+// Đọc từ biến cấu hình động (tạo từ biến môi trường Vercel) hoặc dùng localhost mặc định
+const API_BASE_URL = (window.ENV_API_BASE_URL && !window.ENV_API_BASE_URL.startsWith('${'))
+    ? window.ENV_API_BASE_URL
+    : 'http://localhost:8080/api/v1/words';
 
 // State management
 let vocabList = [];
