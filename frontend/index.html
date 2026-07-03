@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocab Note & AI Assistant</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Link CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="app-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-brain-circuit logo-icon"></i>
+                <div class="title-meta">
+                    <h1>VocabNote<span class="gradient-text">.AI</span></h1>
+                    <p>Sổ tay từ vựng tích hợp Trợ lý AI Gemini</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="indicator-dot online"></span>
+                <span class="status-text">Backend Connected</span>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="app-workspace">
+            <!-- Left Panel: Word Notebook List -->
+            <section class="notebook-section">
+                <div class="panel-header">
+                    <div class="panel-title-area">
+                        <h2><i class="fa-solid fa-book-bookmark"></i> Sổ Tay Từ Vựng</h2>
+                        <span class="badge" id="word-count">0 từ</span>
+                    </div>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="search-input" placeholder="Tìm kiếm từ vựng (A-Z)..." autocomplete="off">
+                    </div>
+                </div>
+
+                <!-- Vocabulary List -->
+                <div class="word-list-container">
+                    <div id="word-list-loading" class="spinner-container">
+                        <div class="spinner"></div>
+                        <p>Đang tải danh sách từ vựng...</p>
+                    </div>
+                    <div id="empty-state" class="empty-state hidden">
+                        <i class="fa-regular fa-folder-open empty-icon"></i>
+                        <h3>Sổ tay của bạn đang trống</h3>
+                        <p>Hãy nhập từ bên Widget AI hoặc thêm từ vựng thủ công để bắt đầu học nhé!</p>
+                    </div>
+                    <div class="word-grid" id="word-grid">
+                        <!-- Word cards dynamic insertion -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: AI Assistant & Save Forms -->
+            <section class="widget-section">
+                <!-- Widget 1: AI Gemini Assistant -->
+                <div class="card-widget ai-widget">
+                    <div class="widget-header">
+                        <i class="fa-solid fa-wand-magic-sparkles ai-icon"></i>
+                        <h3>Trợ Lý AI Gợi Ý</h3>
+                    </div>
+                    <p class="widget-description">Nhập từ tiếng Anh để AI gợi ý nghĩa và câu ví dụ tham khảo.</p>
+                    <div class="input-group">
+                        <input type="text" id="ai-input" placeholder="Nhập từ tiếng Anh (ví dụ: resilience)...">
+                        <button id="btn-ask-ai" class="btn btn-primary">
+                            <i class="fa-solid fa-paper-plane"></i> Hỏi AI
+                        </button>
+                    </div>
+
+                    <!-- AI Result Output -->
+                    <div id="ai-loading" class="ai-loader hidden">
+                        <div class="spinner-sm"></div>
+                        <p>Gemini đang suy nghĩ...</p>
+                    </div>
+                    <div id="ai-result" class="ai-result-card hidden">
+                        <div class="ai-result-header">
+                            <span class="tag-ai">Gợi ý từ AI Gemini</span>
+                            <button id="btn-autofill" class="btn-text" title="Tự động điền vào form lưu từ bên dưới">
+                                <i class="fa-solid fa-copy"></i> Dùng nghĩa này
+                            </button>
+                        </div>
+                        <div class="ai-result-content">
+                            <div class="res-item">
+                                <span class="res-label">Nghĩa gợi ý:</span>
+                                <p class="res-val" id="res-meaning"></p>
+                            </div>
+                            <div class="res-item">
+                                <span class="res-label">Ví dụ mẫu:</span>
+                                <p class="res-val italic" id="res-example"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Widget 2: Save Word Form -->
+                <div class="card-widget save-widget">
+                    <div class="widget-header">
+                        <i class="fa-solid fa-pen-to-square save-icon"></i>
+                        <h3>Thêm Từ Vựng Thủ Công</h3>
+                    </div>
+                    <p class="widget-description">Tự tay nhập nghĩa tiếng Việt giúp bạn khắc sâu trí nhớ lâu hơn.</p>
+                    <form id="save-word-form" onsubmit="return false;">
+                        <div class="form-control">
+                            <label for="save-english">Từ tiếng Anh <span class="required">*</span></label>
+                            <input type="text" id="save-english" placeholder="Ví dụ: resilience" required>
+                        </div>
+                        <div class="form-control">
+                            <label for="save-vietnamese">Nghĩa tiếng Việt của bạn <span class="required">*</span></label>
+                            <textarea id="save-vietnamese" rows="2" placeholder="Ví dụ: sự kiên cường, khả năng phục hồi nhanh chóng" required></textarea>
+                        </div>
+                        <button type="submit" id="btn-save-word" class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu Vào Sổ Tay
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Link JS -->
+    <script src="app.js"></script>
+</body>
+</html>

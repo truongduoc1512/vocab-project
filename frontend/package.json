@@ -1,0 +1,9 @@
+{
+  "name": "vocab-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for Vocab Project",
+  "scripts": {
+    "dev": "npx -y http-server ./ -p 3000"
+  },
+  "dependencies": {}
+}
