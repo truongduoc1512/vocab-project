@@ -4,7 +4,7 @@
 // Tự động chuyển đổi giữa Localhost và Render Cloud khi deploy lên Vercel
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:8080/api/v1/words'
-    : 'https://YOUR_BACKEND_APP.onrender.com/api/v1/words'; // Hãy thay thế bằng URL thực tế sau khi tạo app trên Render
+    : 'https://vocab-project.onrender.com/api/v1/words';
 
 // State management
 let vocabList = [];
