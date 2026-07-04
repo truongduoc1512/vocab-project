@@ -63,16 +63,16 @@ graph TD
     Gemini[Gemini Flash AI API]
     Supabase[Supabase PostgreSQL]
 
-    Client -->|1. GET /api/v1/words/suggest?q=word| Render
-    Render -->|2. Request Suggestion| Gemini
-    Gemini -->|3. JSON Meaning & Example| Render
-    Render -->|4. Return Suggested DTO| Client
+    Client -->|"1. GET /api/v1/words/suggest?q=word"| Render
+    Render -->|"2. Request Suggestion"| Gemini
+    Gemini -->|"3. JSON Meaning & Example"| Render
+    Render -->|"4. Return Suggested DTO"| Client
     
-    Client -->|5. POST /api/v1/words (Manual input)| Render
-    Render -->|6. Check constraints & Save| Supabase
+    Client -->|"5. POST /api/v1/words (Manual input)"| Render
+    Render -->|"6. Check constraints & Save"| Supabase
     
-    Client -->|7. PUT/DELETE /api/v1/words/{id}| Render
-    Render -->|8. Update/Delete row| Supabase
+    Client -->|"7. PUT/DELETE /api/v1/words/{id}"| Render
+    Render -->|"8. Update/Delete row"| Supabase
 ```
 
 ---
