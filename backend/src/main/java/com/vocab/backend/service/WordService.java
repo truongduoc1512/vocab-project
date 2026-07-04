@@ -47,6 +47,47 @@ public class WordService {
                 .build();
     }
 
+    public WordResponse updateWord(Long id, SaveWordRequest request) {
+        Word word = wordRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy từ vựng để sửa!"));
+
+        if (request.getEnglishWord() == null || request.getEnglishWord().trim().isEmpty()) {
+            throw new RuntimeException("Từ tiếng Anh không được để trống!");
+        }
+        if (request.getVietnameseMeaning() == null || request.getVietnameseMeaning().trim().isEmpty()) {
+            throw new RuntimeException("Nghĩa tiếng Việt không được để trống!");
+        }
+
+        String newEnglishWord = request.getEnglishWord().trim().toLowerCase();
+
+        // Kiểm tra xem từ mới có trùng với bất kỳ từ nào khác ngoại trừ chính nó
+        if (!word.getEnglishWord().equals(newEnglishWord) && wordRepository.existsByEnglishWord(newEnglishWord)) {
+            log.warn("Từ vựng '{}' đã tồn tại ở bản ghi khác.", newEnglishWord);
+            throw new RuntimeException("Từ tiếng Anh này đã tồn tại ở bản ghi khác!");
+        }
+
+        word.setEnglishWord(newEnglishWord);
+        word.setVietnameseMeaning(request.getVietnameseMeaning().trim());
+
+        log.info("Đang cập nhật từ vựng ID {}: {}", id, newEnglishWord);
+        Word savedEntity = wordRepository.save(word);
+
+        return WordResponse.builder()
+                .id(savedEntity.getId())
+                .englishWord(savedEntity.getEnglishWord())
+                .vietnameseMeaning(savedEntity.getVietnameseMeaning())
+                .build();
+    }
+
+    public void deleteWord(Long id) {
+        if (!wordRepository.existsById(id)) {
+            log.warn("Không tìm thấy từ vựng ID {} để xóa.", id);
+            throw new RuntimeException("Không tìm thấy từ vựng để xóa!");
+        }
+        log.info("Đang xóa từ vựng ID {}", id);
+        wordRepository.deleteById(id);
+    }
+
     public List<WordResponse> getAllWords() {
         return wordRepository.findAllByOrderByEnglishWordAsc()
                 .stream()

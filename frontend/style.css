@@ -302,20 +302,97 @@ body {
     text-transform: capitalize;
 }
 
-.btn-card-action {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 14px;
-    padding: 4px;
-    border-radius: 4px;
+.word-card-actions {
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    transform: translateX(10px);
     transition: var(--transition-smooth);
 }
 
-.btn-card-action:hover {
+.word-card:hover .word-card-actions {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.btn-card-action {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 6px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-smooth);
+    width: 28px;
+    height: 28px;
+}
+
+.btn-card-action.edit-btn:hover {
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+.btn-card-action.delete-btn:hover {
     color: #f43f5e;
-    background: rgba(244, 63, 94, 0.1);
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.3);
+    box-shadow: 0 0 8px rgba(244, 63, 94, 0.2);
+}
+
+/* Inline Edit styles */
+.edit-mode-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.edit-input-eng,
+.edit-input-viet {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 100%;
+    transition: var(--transition-smooth);
+}
+
+.edit-input-eng:focus,
+.edit-input-viet:focus {
+    border-color: #818cf8;
+    outline: none;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.btn-save-edit {
+    background: var(--success-gradient) !important;
+    color: #fff !important;
+    border: none !important;
+}
+
+.btn-save-edit:hover {
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-cancel-edit:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
 }
 
 .word-card-body p {

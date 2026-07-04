@@ -48,6 +48,28 @@ public class WordController {
         }
     }
 
+    @PutMapping("/{id}")
+    @Operation(summary = "Sửa từ vựng", description = "Cập nhật từ tiếng Anh hoặc nghĩa tiếng Việt của từ vựng đã lưu")
+    public ResponseEntity<?> updateWord(@PathVariable Long id, @RequestBody SaveWordRequest request) {
+        try {
+            WordResponse updatedWord = wordService.updateWord(id, request);
+            return ResponseEntity.ok(updatedWord);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Xóa từ vựng", description = "Xóa từ vựng khỏi sổ tay theo ID")
+    public ResponseEntity<?> deleteWord(@PathVariable Long id) {
+        try {
+            wordService.deleteWord(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping
     @Operation(summary = "Lấy danh sách từ vựng", description = "Trả về toàn bộ sổ tay từ vựng đã được sắp xếp A-Z")
     public ResponseEntity<List<WordResponse>> getAllWords() {

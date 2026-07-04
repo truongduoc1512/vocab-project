@@ -9,6 +9,7 @@ const API_BASE_URL = (window.ENV_API_BASE_URL && !window.ENV_API_BASE_URL.starts
 // State management
 let vocabList = [];
 let lastAiResult = null;
+let editingWordId = null;
 
 // ==========================================
 // DOM Elements
@@ -113,17 +114,134 @@ function renderNotebookList(list) {
     list.forEach(item => {
         const card = document.createElement('div');
         card.className = 'word-card';
-        card.innerHTML = `
-            <div class="word-card-header">
-                <span class="word-card-title">${escapeHtml(item.englishWord)}</span>
-            </div>
-            <div class="word-card-body">
-                <p>${escapeHtml(item.vietnameseMeaning)}</p>
-            </div>
-        `;
+        
+        if (item.id === editingWordId) {
+            // Render inline edit form
+            card.innerHTML = `
+                <div class="edit-mode-form">
+                    <input type="text" class="edit-input-eng" value="${escapeHtml(item.englishWord)}" placeholder="Từ tiếng Anh">
+                    <textarea class="edit-input-viet" rows="2" placeholder="Nghĩa tiếng Việt">${escapeHtml(item.vietnameseMeaning)}</textarea>
+                    <div class="edit-actions">
+                        <button class="btn-text btn-save-edit" onclick="saveInlineEdit(${item.id}, this)">
+                            <i class="fa-solid fa-check"></i> Lưu
+                        </button>
+                        <button class="btn-text btn-cancel-edit" onclick="cancelInlineEdit()">
+                            <i class="fa-solid fa-xmark"></i> Hủy
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            // Render regular card with hover actions
+            card.innerHTML = `
+                <div class="word-card-header">
+                    <span class="word-card-title">${escapeHtml(item.englishWord)}</span>
+                    <div class="word-card-actions">
+                        <button class="btn-card-action edit-btn" onclick="startInlineEdit(${item.id})" title="Sửa từ vựng">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
+                        <button class="btn-card-action delete-btn" onclick="deleteWord(${item.id})" title="Xóa từ vựng">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="word-card-body">
+                    <p>${escapeHtml(item.vietnameseMeaning)}</p>
+                </div>
+            `;
+        }
         wordGrid.appendChild(card);
     });
 }
+
+// Global functions for inline actions
+window.startInlineEdit = function(id) {
+    editingWordId = id;
+    renderNotebookList(vocabList);
+};
+
+window.cancelInlineEdit = function() {
+    editingWordId = null;
+    renderNotebookList(vocabList);
+};
+
+window.saveInlineEdit = async function(id, btnEl) {
+    const card = btnEl.closest('.word-card');
+    const englishWord = card.querySelector('.edit-input-eng').value.trim();
+    const vietnameseMeaning = card.querySelector('.edit-input-viet').value.trim();
+
+    if (!englishWord || !vietnameseMeaning) {
+        showToast('Vui lòng nhập đầy đủ các trường bắt buộc!', 'error');
+        return;
+    }
+
+    btnEl.disabled = true;
+    const originalHtml = btnEl.innerHTML;
+    btnEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                englishWord,
+                vietnameseMeaning
+            })
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(errText || 'Không thể cập nhật từ vựng.');
+        }
+
+        const updatedWord = await response.json();
+        
+        // Update in local list
+        const idx = vocabList.findIndex(w => w.id === id);
+        if (idx !== -1) {
+            vocabList[idx] = updatedWord;
+        }
+
+        showToast('Đã sửa từ vựng thành công!', 'success');
+        editingWordId = null;
+        renderNotebookList(vocabList);
+    } catch (error) {
+        showToast(error.message, 'error');
+    } finally {
+        btnEl.disabled = false;
+        btnEl.innerHTML = originalHtml;
+    }
+};
+
+window.deleteWord = async function(id) {
+    const wordToDelete = vocabList.find(w => w.id === id);
+    const wordText = wordToDelete ? `'${wordToDelete.englishWord}'` : 'từ vựng này';
+    
+    if (!confirm(`Bạn có chắc chắn muốn xóa ${wordText} khỏi sổ tay?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            throw new Error(errText || 'Không thể xóa từ vựng.');
+        }
+
+        // Remove from local list
+        vocabList = vocabList.filter(w => w.id !== id);
+        showToast('Đã xóa từ vựng thành công!', 'success');
+        renderNotebookList(vocabList);
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
+};
+
 
 // ==========================================
 // AI Assistant Logic
